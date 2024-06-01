@@ -1,0 +1,98 @@
+import pandas as pd
+import seaborn as sns
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn import svm
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.model_selection import train_test_split
+
+# Read the data into a DataFrame
+data = pd.read_csv('winequality-red.csv')
+
+# Display the DataFrame
+data
+# Check for null values
+null_values = data.isnull().sum()
+
+# Display the result
+print(null_values)
+# Get the number of rows and columns
+rows, columns = data.shape
+
+# Display the result
+print(f"Number of rows: {rows}")
+print(f"Number of columns: {columns}")
+# Perform descriptive statistics
+descriptive_stats = data.describe()
+
+# Display the descriptive statistics
+print(descriptive_stats)
+# Get the unique values for each column
+unique_values = {column: data[column].unique() for column in data.columns}
+
+# Display the unique values for each column
+for column, values in unique_values.items():
+    print(f"{column}: {values}")
+# Filter the DataFrame for rows where the quality is 5
+quality_5_wines = data[data['quality'] == 5]
+
+# Display the filtered DataFrame
+print(quality_5_wines)
+# Filter the DataFrame for rows where the quality is 5
+quality_5_wines = data[data['quality'] == 5]
+
+# Perform descriptive analysis
+descriptive_statistics = quality_5_wines.describe()
+
+# Display the descriptive statistics
+print(descriptive_statistics)
+data.groupby('quality').describe()
+data['quality'].value_counts()
+# Plot a histogram of the quality column
+plt.figure(figsize=(10, 6))
+sns.histplot(data['quality'], bins=10)
+plt.title('Distribution of Wine Quality')
+plt.xlabel('Quality')
+plt.ylabel('Frequency')
+plt.show()
+#Training of dataset starts here.
+
+# Separate the response variable (quality) and feature variables
+X = data.drop(columns='quality')  # Features
+y = data['quality']              # Response variable
+
+#Train and test splitting of data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
+print(y_test.shape, y_train.shape)
+#applying standard scaling to get optimized result.
+
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+rfc = RandomForestClassifier(n_estimators=200)
+rfc.fit(X_train, y_train)
+predict_rfc = rfc.predict(X_test)
+predict_rfc
+#To check how well our model performed
+
+print(classification_report(y_test, predict_rfc))
+print(confusion_matrix(y_test, predict_rfc))
+svm_model = svm.SVC()
+svm_model.fit(X_train, y_train)
+predict_svm = svm_model.predict(X_test)
+predict_svm
+#To check how well our model performed
+
+print(classification_report(y_test, predict_svm))
+print(confusion_matrix(y_test, predict_svm))
+neural_network = MLPClassifier(hidden_layer_sizes=(11,11,11),max_iter=500) 
+neural_network.fit(X_train, y_train)
+prediction = neural_network.predict(X_test)
+prediction
+#To check how well our model performed
+
+print(classification_report(y_test, prediction))
